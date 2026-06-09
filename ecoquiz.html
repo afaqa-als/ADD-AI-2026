@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoQuiz | إيكوكويز</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap');
+
+    :root {
+      --green-dark: #1B5E20;
+      --green-mid: #2E7D32;
+      --green-light: #4CAF50;
+      --green-pale: #E8F5E9;
+      --shadow: 0 8px 32px rgba(0,0,0,0.15);
+      --radius: 20px;
+      --theme-color: #2E7D32;
+      --theme-light: #E8F5E9;
+      --theme-gradient: linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #43A047 100%);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      background: var(--theme-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      transition: background 0.6s ease;
+      position: relative;
+    }
+
+    body[lang="ar"] { font-family: 'Cairo', sans-serif; }
+
+    .bg-leaves {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .leaf {
+      position: absolute;
+      opacity: 0.12;
+      animation: floatLeaf linear infinite;
+    }
+
+    @keyframes floatLeaf {
+      0%   { transform: translateY(110vh) rotate(0deg);   opacity: 0; }
+      10%  { opacity: 0.12; }
+      90%  { opacity: 0.12; }
+      100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 640px;
+      padding: 20px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.97);
+      border-radius: var(--radius);
+      padding: 40px 36px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)   scale(1);    }
+    }
+
+    /* ---- Lang toggle ---- */
+    .lang-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+      justify-content: center;
+    }
+
+    .lang-btn {
+      padding: 8px 20px;
+      border: 2px solid var(--green-mid);
+      background: transparent;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--green-mid);
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .lang-btn.active { background: var(--green-mid); color: white; }
+
+    /* ---- Logo ---- */
+    .logo-area { text-align: center; margin-bottom: 32px; }
+
+    .logo-icon {
+      font-size: 4rem;
+      display: block;
+      margin-bottom: 8px;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.06); }
+    }
+
+    .logo-title { font-size: 2.6rem; font-weight: 900; color: var(--green-dark); letter-spacing: -1px; }
+    .logo-subtitle { font-size: 1rem; color: #666; margin-top: 4px; font-weight: 600; }
+
+    /* ---- Input ---- */
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-weight: 700; color: #444; margin-bottom: 8px; font-size: 0.95rem; }
+
+    .text-input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2.5px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      color: #333;
+      background: #fafafa;
+    }
+
+    .text-input:focus {
+      border-color: var(--green-light);
+      box-shadow: 0 0 0 4px rgba(76,175,80,0.12);
+      background: white;
+    }
+
+    /* ---- Buttons ---- */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px 24px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--green-mid);
+      color: white;
+      box-shadow: 0 4px 15px rgba(46,125,50,0.35);
+    }
+
+    .btn-primary:hover  { background: var(--green-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(46,125,50,0.4); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { background: #bdbdbd; box-shadow: none; cursor: not-allowed; transform: none; }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--green-mid);
+      color: var(--green-mid);
+      margin-top: 10px;
+    }
+
+    .btn-outline:hover { background: var(--green-pale); }
+
+    /* ---- Section title ---- */
+    .section-title { font-size: 1.6rem; font-weight: 900; color: var(--green-dark); text-align: center; margin-bottom: 24px; }
+
+    /* ---- Avatar grid ---- */
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .avatar-option {
+      aspect-ratio: 1;
+      border: 3px solid #e0e0e0;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fafafa;
+      gap: 4px;
+      padding: 8px;
+    }
+
+    .avatar-option:hover { border-color: var(--green-light); background: var(--green-pale); transform: scale(1.05); }
+
+    .avatar-option.selected {
+      border-color: var(--green-mid);
+      background: var(--green-pale);
+      box-shadow: 0 0 0 4px rgba(46,125,50,0.2);
+      transform: scale(1.05);
+    }
+
+    .avatar-emoji { font-size: 2.2rem; }
+    .avatar-label { font-size: 0.65rem; font-weight: 700; color: #555; text-align: center; }
+
+    /* ---- Theme grid ---- */
+    .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 8px; }
+
+    .theme-card {
+      border: 3px solid transparent;
+      border-radius: 16px;
+      padding: 20px 14px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.25s;
+    }
+
+    .theme-card:hover { transform: translateY(-3px); filter: brightness(1.03); }
+
+    .theme-card.geo  { background: #E3F2FD; border-color: #1565C0; }
+    .theme-card.hist { background: #FBE9E7; border-color: #BF360C; }
+    .theme-card.sci  { background: #F3E5F5; border-color: #6A1B9A; }
+    .theme-card.food { background: #FFF3E0; border-color: #E65100; }
+    .theme-card.ani  { background: #E8F5E9; border-color: #1B5E20; }
+
+    .theme-card.geo  .theme-name { color: #1565C0; }
+    .theme-card.hist .theme-name { color: #BF360C; }
+    .theme-card.sci  .theme-name { color: #6A1B9A; }
+    .theme-card.food .theme-name { color: #E65100; }
+    .theme-card.ani  .theme-name { color: #1B5E20; }
+
+    .theme-card-fifth { grid-column: 1 / -1; max-width: 50%; margin: 0 auto; width: 100%; }
+
+    .theme-icon  { font-size: 2.4rem; margin-bottom: 8px; display: block; }
+    .theme-name  { font-size: 1rem; font-weight: 800; }
+    .theme-desc  { font-size: 0.78rem; color: #777; margin-top: 4px; font-weight: 600; }
+
+    /* ---- Quiz header ---- */
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 12px;
+    }
+
+    .player-info { display: flex; align-items: center; gap: 8px; }
+
+    .player-avatar-sm {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      background: var(--theme-light, #E8F5E9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      border: 2px solid var(--theme-color, #2E7D32);
+    }
+
+    .player-name-sm { font-weight: 800; font-size: 0.95rem; color: #333; }
+
+    .score-badge {
+      background: var(--theme-color, #2E7D32);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    /* ---- Progress ---- */
+    .progress-area { margin-bottom: 20px; }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: #888;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .progress-bar { height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden; }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--theme-color, #2E7D32);
+      border-radius: 10px;
+      transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    /* ---- Question ---- */
+    .question-badge {
+      display: inline-block;
+      background: var(--theme-light, #E8F5E9);
+      color: var(--theme-color, #2E7D32);
+      padding: 5px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .question-text { font-size: 1.2rem; font-weight: 800; color: #222; line-height: 1.5; margin-bottom: 24px; }
+
+    /* ---- Options ---- */
+    .options-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+
+    .option-btn {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2.5px solid #e0e0e0;
+      border-radius: 14px;
+      background: #fafafa;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #333;
+      text-align: left;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    body[dir="rtl"] .option-btn { text-align: right; }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--theme-color, #2E7D32);
+      background: var(--theme-light, #E8F5E9);
+      transform: translateX(4px);
+    }
+
+    body[dir="rtl"] .option-btn:hover:not(:disabled) { transform: translateX(-4px); }
+    .option-btn:disabled { cursor: not-allowed; }
+
+    .option-label {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: #e0e0e0;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.85rem;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .option-btn.correct { background: #E8F5E9; border-color: #2E7D32; color: #1B5E20; }
+    .option-btn.correct .option-label { background: #2E7D32; color: white; }
+    .option-btn.wrong   { background: #FFEBEE; border-color: #C62828; color: #B71C1C; }
+    .option-btn.wrong   .option-label { background: #C62828; color: white; }
+
+    /* ---- Feedback ---- */
+    .feedback-banner {
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      animation: bounceIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    @keyframes bounceIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1);   }
+    }
+
+    .feedback-banner.show { display: flex; }
+    .feedback-banner.correct-fb { background: #E8F5E9; color: #1B5E20; border: 2px solid #2E7D32; }
+    .feedback-banner.wrong-fb   { background: #FFEBEE; color: #B71C1C; border: 2px solid #C62828; }
+    .feedback-icon { font-size: 1.4rem; }
+    .feedback-explain { font-size: 0.82rem; font-weight: 600; margin-top: 2px; opacity: 0.85; }
+
+    /* ---- Results ---- */
+    .results-avatar { font-size: 4rem; text-align: center; display: block; margin-bottom: 12px; }
+    .results-name { text-align: center; font-size: 1.1rem; color: #666; font-weight: 700; margin-bottom: 8px; }
+    .stars { text-align: center; font-size: 1.8rem; margin-bottom: 20px; letter-spacing: 4px; }
+
+    .score-circle {
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: var(--theme-gradient, linear-gradient(135deg,#1B5E20,#43A047));
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      color: white;
+      animation: scaleIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.5); }
+      to   { opacity: 1; transform: scale(1);   }
+    }
+
+    .score-number { font-size: 3rem; font-weight: 900; line-height: 1; }
+    .score-of     { font-size: 0.85rem; font-weight: 700; opacity: 0.85; }
+
+    .result-message { text-align: center; font-size: 1.05rem; font-weight: 700; color: #444; margin-bottom: 28px; padding: 0 8px; line-height: 1.5; }
+
+    .result-breakdown { background: #f5f5f5; border-radius: 14px; padding: 16px 20px; margin-bottom: 24px; }
+    .result-breakdown-title { font-size: 0.85rem; font-weight: 800; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; text-align: center; }
+    .result-bars { display: flex; flex-direction: column; gap: 8px; }
+
+    .result-bar-row { display: flex; align-items: center; gap: 10px; }
+    .result-bar-label { font-size: 0.8rem; font-weight: 700; color: #555; width: 24px; text-align: center; }
+    .result-bar-track { flex: 1; height: 10px; background: #e0e0e0; border-radius: 10px; overflow: hidden; }
+    .result-bar-fill  { height: 100%; border-radius: 10px; transition: width 0.9s ease 0.3s; }
+    .result-bar-fill.right { background: #2E7D32; }
+    .result-bar-fill.wrong { background: #E53935; }
+    .result-bar-icon { font-size: 1rem; }
+
+    .results-actions { display: flex; flex-direction: column; gap: 10px; }
+
+    /* ---- Confetti ---- */
+    .confetti-piece {
+      position: fixed;
+      pointer-events: none;
+      animation: confettiFall linear forwards;
+      z-index: 999;
+    }
+
+    @keyframes confettiFall {
+      0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ---- Theme body classes ---- */
+    body.theme-geo  { --theme-color:#1565C0; --theme-light:#E3F2FD; --theme-gradient:linear-gradient(135deg,#1565C0,#0097A7); }
+    body.theme-hist { --theme-color:#BF360C; --theme-light:#FBE9E7; --theme-gradient:linear-gradient(135deg,#4E342E,#BF360C); }
+    body.theme-sci  { --theme-color:#6A1B9A; --theme-light:#F3E5F5; --theme-gradient:linear-gradient(135deg,#1A237E,#6A1B9A); }
+    body.theme-food { --theme-color:#E65100; --theme-light:#FFF3E0; --theme-gradient:linear-gradient(135deg,#E65100,#F9A825); }
+    body.theme-ani  { --theme-color:#1B5E20; --theme-light:#E8F5E9; --theme-gradient:linear-gradient(135deg,#1B5E20,#F57F17); }
+
+    /* ---- Screens ---- */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    @media (max-width: 480px) {
+      .card { padding: 28px 20px; }
+      .avatar-grid { gap: 8px; }
+      .avatar-emoji { font-size: 1.8rem; }
+      .logo-title { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-leaves" id="bgLeaves"></div>
+
+<div class="container">
+
+  <!-- ===== WELCOME ===== -->
+  <div class="screen active" id="screen-welcome">
+    <div class="card">
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')" id="btn-en">EN</button>
+        <button class="lang-btn"        onclick="setLang('ar')" id="btn-ar">ع</button>
+      </div>
+      <div class="logo-area">
+        <span class="logo-icon">🌍</span>
+        <div class="logo-title" id="t-title">EcoQuiz</div>
+        <div class="logo-subtitle" id="t-subtitle">Test your knowledge about our world!</div>
+      </div>
+      <div class="input-group">
+        <label id="t-name-label">Your Name</label>
+        <input type="text" class="text-input" id="playerName"
+               placeholder="Enter your name…" maxlength="24"
+               oninput="checkNameInput()">
+      </div>
+      <button class="btn btn-primary" id="btn-welcome-next" onclick="goToAvatar()" disabled>
+        <span id="t-next-btn">Next →</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== AVATAR ===== -->
+  <div class="screen" id="screen-avatar">
+    <div class="card">
+      <div class="section-title" id="t-choose-avatar">Choose Your Avatar</div>
+      <div class="avatar-grid" id="avatarGrid"></div>
+      <button class="btn btn-primary" id="btn-avatar-next" onclick="goToTheme()" disabled>
+        <span id="t-next-btn-2">Next →</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== THEME ===== -->
+  <div class="screen" id="screen-theme">
+    <div class="card">
+      <div class="section-title" id="t-choose-theme">Choose a Theme</div>
+      <div class="theme-grid" id="themeGrid"></div>
+    </div>
+  </div>
+
+  <!-- ===== QUIZ ===== -->
+  <div class="screen" id="screen-quiz">
+    <div class="card">
+      <div class="quiz-header">
+        <div class="player-info">
+          <div class="player-avatar-sm" id="quiz-avatar-display"></div>
+          <div class="player-name-sm"   id="quiz-player-name"></div>
+        </div>
+        <div class="score-badge">
+          <span id="t-score-label">Score</span>: <span id="score-display">0</span>/<span id="score-total">5</span>
+        </div>
+      </div>
+
+      <div class="progress-area">
+        <div class="progress-text">
+          <span><span id="t-q-label">Question</span> <span id="current-q-num">1</span> <span id="t-of">of</span> 5</span>
+          <span id="progress-pct">20%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
+      </div>
+
+      <div class="question-badge" id="theme-badge"></div>
+      <div class="question-text"  id="question-text">Loading…</div>
+
+      <div class="options-grid" id="options-grid"></div>
+
+      <div class="feedback-banner" id="feedback-banner">
+        <span class="feedback-icon" id="feedback-icon"></span>
+        <div>
+          <div id="feedback-main"></div>
+          <div class="feedback-explain" id="feedback-explain"></div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-next-q" onclick="nextQuestion()" style="display:none">
+        <span id="t-next-q-btn">Next Question →</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS ===== -->
+  <div class="screen" id="screen-results">
+    <div class="card">
+      <span class="results-avatar" id="results-avatar"></span>
+      <div  class="results-name"   id="results-name"></div>
+      <div  class="stars"          id="results-stars"></div>
+      <div class="score-circle">
+        <div class="score-number" id="results-score">0</div>
+        <div class="score-of">/5</div>
+      </div>
+      <div class="result-message" id="results-message"></div>
+      <div class="result-breakdown">
+        <div class="result-breakdown-title" id="t-breakdown">Your Answers</div>
+        <div class="result-bars" id="result-bars"></div>
+      </div>
+      <div class="results-actions">
+        <button class="btn btn-primary" onclick="playAgain()"  id="t-play-again-btn">Play Again</button>
+        <button class="btn btn-outline"  onclick="changeTheme()" id="t-change-theme-btn">Change Theme</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// DATA – avatars
+// ─────────────────────────────────────────────
+const AVATARS = [
+  { emoji:'🌳', en:'Tree',      ar:'شجرة'   },
+  { emoji:'🦋', en:'Butterfly', ar:'فراشة'  },
+  { emoji:'🌊', en:'Wave',      ar:'موجة'   },
+  { emoji:'🦅', en:'Eagle',     ar:'نسر'    },
+  { emoji:'🌺', en:'Flower',    ar:'زهرة'   },
+  { emoji:'🐬', en:'Dolphin',   ar:'دولفين' },
+  { emoji:'🦁', en:'Lion',      ar:'أسد'    },
+  { emoji:'🌿', en:'Herb',      ar:'نبتة'   },
+];
+
+// ─────────────────────────────────────────────
+// DATA – themes
+// ─────────────────────────────────────────────
+const THEMES = [
+  { id:'geo',  cls:'geo',  icon:'🗺️', key:'geography', bodyClass:'theme-geo'  },
+  { id:'hist', cls:'hist', icon:'📜', key:'history',   bodyClass:'theme-hist' },
+  { id:'sci',  cls:'sci',  icon:'🔬', key:'science',   bodyClass:'theme-sci'  },
+  { id:'food', cls:'food', icon:'🍃', key:'food',      bodyClass:'theme-food' },
+  { id:'ani',  cls:'ani',  icon:'🦎', key:'animals',   bodyClass:'theme-ani'  },
+];
+
+// ─────────────────────────────────────────────
+// DATA – questions  (answer = 0-based index)
+// ─────────────────────────────────────────────
+const QUESTIONS = {
+  geography: {
+    en: [
+      { q:"What is the longest river in the world?",
+        opts:["Amazon","Nile","Congo","Yangtze"], answer:1,
+        exp:"The Nile stretches ~6,650 km through northeastern Africa." },
+      { q:"Which country has the most natural lakes?",
+        opts:["Russia","USA","Canada","Brazil"], answer:2,
+        exp:"Canada has over 3 million natural lakes – more than any other country." },
+      { q:"What is the highest mountain on Earth?",
+        opts:["K2","Kilimanjaro","Denali","Mount Everest"], answer:3,
+        exp:"Mount Everest stands at 8,849 m above sea level." },
+      { q:"Which is the world's largest ocean?",
+        opts:["Atlantic","Indian","Arctic","Pacific"], answer:3,
+        exp:"The Pacific Ocean covers over 165 million km², nearly half of Earth's water surface." },
+      { q:"Approximately what % of Earth's surface is covered by water?",
+        opts:["50%","71%","85%","60%"], answer:1,
+        exp:"About 71% of Earth's surface is water, mostly oceans." },
+    ],
+    ar: [
+      { q:"ما هو أطول نهر في العالم؟",
+        opts:["الأمازون","النيل","الكونغو","اليانغتسي"], answer:1,
+        exp:"يمتد نهر النيل نحو 6,650 كم عبر شمال شرق أفريقيا." },
+      { q:"أي دولة تمتلك أكبر عدد من البحيرات الطبيعية؟",
+        opts:["روسيا","الولايات المتحدة","كندا","البرازيل"], answer:2,
+        exp:"تمتلك كندا أكثر من 3 ملايين بحيرة طبيعية، وهو أكبر عدد في العالم." },
+      { q:"ما هو أعلى جبل على وجه الأرض؟",
+        opts:["K2","كيليمنجارو","دينالي","إيفرست"], answer:3,
+        exp:"يبلغ ارتفاع جبل إيفرست 8,849 مترًا فوق مستوى سطح البحر." },
+      { q:"ما هو أكبر محيط في العالم؟",
+        opts:["الأطلسي","الهندي","المتجمد الشمالي","الهادئ"], answer:3,
+        exp:"يغطي المحيط الهادئ أكثر من 165 مليون كم²، وهو ما يُقارب نصف مسطحات المياه على الأرض." },
+      { q:"ما النسبة التقريبية لسطح الأرض المغطى بالماء؟",
+        opts:["50%","71%","85%","60%"], answer:1,
+        exp:"يغطي الماء نحو 71% من سطح الأرض، معظمه في المحيطات." },
+    ],
+  },
+  history: {
+    en: [
+      { q:"In which year did World War II end?",
+        opts:["1943","1944","1946","1945"], answer:3,
+        exp:"WWII ended in 1945: Germany surrendered in May, Japan in September." },
+      { q:"Who was the first President of the United States?",
+        opts:["John Adams","George Washington","Thomas Jefferson","Benjamin Franklin"], answer:1,
+        exp:"George Washington served as the 1st U.S. President from 1789 to 1797." },
+      { q:"In what year did humans first land on the Moon?",
+        opts:["1965","1967","1969","1971"], answer:2,
+        exp:"On 20 July 1969, Neil Armstrong & Buzz Aldrin became the first humans on the Moon." },
+      { q:"Which ancient wonder was in Alexandria, Egypt?",
+        opts:["The Colossus of Rhodes","The Lighthouse","The Hanging Gardens","The Statue of Zeus"], answer:1,
+        exp:"The Lighthouse of Alexandria (Pharos) was one of the tallest structures of antiquity." },
+      { q:"Who invented the telephone?",
+        opts:["Thomas Edison","Nikola Tesla","Alexander Graham Bell","Marconi"], answer:2,
+        exp:"Bell received the first telephone patent in 1876." },
+    ],
+    ar: [
+      { q:"في أي عام انتهت الحرب العالمية الثانية؟",
+        opts:["1943","1944","1946","1945"], answer:3,
+        exp:"انتهت الحرب عام 1945: استسلمت ألمانيا في مايو واليابان في سبتمبر." },
+      { q:"من كان أول رئيس للولايات المتحدة؟",
+        opts:["جون آدامز","جورج واشنطن","توماس جيفرسون","بنجامين فرانكلين"], answer:1,
+        exp:"تولّى جورج واشنطن الرئاسة من عام 1789 حتى 1797." },
+      { q:"في أي عام وطأت أقدام البشر سطح القمر للمرة الأولى؟",
+        opts:["1965","1967","1969","1971"], answer:2,
+        exp:"في 20 يوليو 1969 أصبح نيل أرمسترونج وباز ألدرين أول بشر يطؤون القمر." },
+      { q:"أي عجائب الدنيا القديمة كانت في الإسكندرية؟",
+        opts:["تمثال رودس","المنارة","حدائق بابل المعلقة","تمثال زيوس"], answer:1,
+        exp:"كانت منارة الإسكندرية (فاروس) من أطول المنشآت التي شيّدها الإنسان قرونًا." },
+      { q:"من يُنسب إليه اختراع الهاتف؟",
+        opts:["توماس إيديسون","نيكولا تسلا","ألكسندر غراهام بيل","ماركوني"], answer:2,
+        exp:"حصل بيل على أول براءة اختراع للهاتف عام 1876." },
+    ],
+  },
+  science: {
+    en: [
+      { q:"What is the chemical formula for water?",
+        opts:["HO","H2O2","H2O","OH2"], answer:2,
+        exp:"Water = two hydrogen atoms + one oxygen atom → H₂O." },
+      { q:"How many bones are in the adult human body?",
+        opts:["196","206","210","220"], answer:1,
+        exp:"Adults have 206 bones. Babies start with ~270, which fuse over time." },
+      { q:"Which planet is called the Red Planet?",
+        opts:["Venus","Jupiter","Saturn","Mars"], answer:3,
+        exp:"Mars looks red because of iron oxide (rust) on its surface." },
+      { q:"What is the approximate speed of light?",
+        opts:["150,000 km/s","300,000 km/s","450,000 km/s","600,000 km/s"], answer:1,
+        exp:"Light travels at ~299,792 km/s in a vacuum." },
+      { q:"What gas do plants absorb during photosynthesis?",
+        opts:["Oxygen","Nitrogen","Carbon Dioxide","Hydrogen"], answer:2,
+        exp:"Plants absorb CO₂ and release O₂ during photosynthesis." },
+    ],
+    ar: [
+      { q:"ما الصيغة الكيميائية للماء؟",
+        opts:["HO","H2O2","H2O","OH2"], answer:2,
+        exp:"الماء يتكون من ذرتَي هيدروجين وذرة أكسجين: H₂O." },
+      { q:"كم عدد عظام جسم الإنسان البالغ؟",
+        opts:["196","206","210","220"], answer:1,
+        exp:"يمتلك البالغ 206 عظمة. يُولد الأطفال بنحو 270 تتلاحم تدريجياً." },
+      { q:"أيّ الكواكب يُعرف بـ'الكوكب الأحمر'؟",
+        opts:["الزهرة","المشتري","زحل","المريخ"], answer:3,
+        exp:"يبدو المريخ أحمر بسبب أكسيد الحديد (الصدأ) على سطحه." },
+      { q:"ما السرعة التقريبية للضوء؟",
+        opts:["150,000 كم/ث","300,000 كم/ث","450,000 كم/ث","600,000 كم/ث"], answer:1,
+        exp:"يسافر الضوء بسرعة ~299,792 كم/ث في الفراغ." },
+      { q:"ما الغاز الذي تمتصه النباتات خلال التمثيل الضوئي؟",
+        opts:["الأكسجين","النيتروجين","ثاني أكسيد الكربون","الهيدروجين"], answer:2,
+        exp:"تمتص النباتات CO₂ وتُطلق O₂ خلال عملية التمثيل الضوئي." },
+    ],
+  },
+  food: {
+    en: [
+      { q:"Which country invented pizza?",
+        opts:["France","Greece","Spain","Italy"], answer:3,
+        exp:"Pizza originated in Naples, Italy, in the late 18th century." },
+      { q:"What is the main ingredient in guacamole?",
+        opts:["Tomato","Avocado","Lime","Jalapeño"], answer:1,
+        exp:"Avocado is the star of guacamole, a dip from Mexico." },
+      { q:"Which country does sushi come from?",
+        opts:["China","Korea","Japan","Vietnam"], answer:2,
+        exp:"Sushi originated in Japan from a method of preserving fish in fermented rice." },
+      { q:"What is the most consumed beverage after water?",
+        opts:["Coffee","Juice","Soda","Tea"], answer:3,
+        exp:"Tea is the world's second most consumed beverage after water." },
+      { q:"Which spice comes from the Crocus flower?",
+        opts:["Turmeric","Cinnamon","Saffron","Paprika"], answer:2,
+        exp:"Saffron comes from Crocus sativus stigmas and is the world's priciest spice." },
+    ],
+    ar: [
+      { q:"أي دولة يُنسب إليها اختراع البيتزا؟",
+        opts:["فرنسا","اليونان","إسبانيا","إيطاليا"], answer:3,
+        exp:"نشأت البيتزا في نابولي بإيطاليا في أواخر القرن الثامن عشر." },
+      { q:"ما المكوّن الرئيسي في الغواكامولي؟",
+        opts:["الطماطم","الأفوكادو","الليمون الأخضر","الجلابينيو"], answer:1,
+        exp:"الأفوكادو هو المكوّن الأساسي في الغواكامولي، وهي صلصة مكسيكية الأصل." },
+      { q:"من أي دولة تنحدر السوشي؟",
+        opts:["الصين","كوريا","اليابان","فيتنام"], answer:2,
+        exp:"نشأت السوشي في اليابان من طريقة حفظ الأسماك في الأرز المخمّر." },
+      { q:"ما أكثر مشروب يُستهلك في العالم بعد الماء؟",
+        opts:["القهوة","العصائر","المشروبات الغازية","الشاي"], answer:3,
+        exp:"الشاي هو ثاني أكثر مشروب استهلاكًا عالميًا بعد الماء." },
+      { q:"من أي زهرة يُستخرج الزعفران؟",
+        opts:["الكركم","القرفة","الزعفران","الفلفل الحلو"], answer:2,
+        exp:"يُستخرج الزعفران من وصمات زهرة الكروكوس، وهو أغلى توابل في العالم." },
+    ],
+  },
+  animals: {
+    en: [
+      { q:"What is the fastest land animal?",
+        opts:["Lion","Leopard","Cheetah","Horse"], answer:2,
+        exp:"The cheetah reaches up to 120 km/h in short sprints." },
+      { q:"How many hearts does an octopus have?",
+        opts:["1","2","3","4"], answer:2,
+        exp:"An octopus has 3 hearts: two for the gills, one for the body." },
+      { q:"What is a group of lions called?",
+        opts:["Herd","Pack","Flock","Pride"], answer:3,
+        exp:"A pride is a group of lions, typically 10–20 members." },
+      { q:"Which is the only mammal capable of true powered flight?",
+        opts:["Flying Squirrel","Bat","Sugar Glider","Colugo"], answer:1,
+        exp:"Bats are the only mammals with true powered flight." },
+      { q:"What is the largest animal on Earth?",
+        opts:["Elephant","Whale Shark","Giraffe","Blue Whale"], answer:3,
+        exp:"The blue whale can reach 33 m in length – the largest animal ever known." },
+    ],
+    ar: [
+      { q:"ما هو أسرع حيوان بري؟",
+        opts:["الأسد","النمر","الفهد","الحصان"], answer:2,
+        exp:"يصل الفهد إلى سرعات تبلغ 120 كم/ساعة في سباقات قصيرة." },
+      { q:"كم عدد قلوب الأخطبوط؟",
+        opts:["1","2","3","4"], answer:2,
+        exp:"للأخطبوط 3 قلوب: اثنان للخياشيم وواحد لبقية الجسم." },
+      { q:"ما اسم مجموعة الأسود؟",
+        opts:["قطيع","حزمة","سرب","فخر"], answer:3,
+        exp:"تُسمى مجموعة الأسود 'فخرًا' (Pride)، وتتكون عادةً من 10 إلى 20 فردًا." },
+      { q:"ما الثدييات الوحيد القادر على الطيران الحقيقي؟",
+        opts:["السنجاب الطائر","الخفاش","السنجاب السكري","الكولوغو"], answer:1,
+        exp:"الخفاش هو الثدييات الوحيد بطيران حقيقي، بفضل أغشية أجنحته." },
+      { q:"ما أكبر حيوان على كوكب الأرض؟",
+        opts:["الفيل","القرش الحوتي","الزرافة","الحوت الأزرق"], answer:3,
+        exp:"يصل الحوت الأزرق إلى 33 مترًا، وهو أكبر حيوان عُرف عبر التاريخ." },
+    ],
+  },
+};
+
+// ─────────────────────────────────────────────
+// TRANSLATIONS
+// ─────────────────────────────────────────────
+const LANG = {
+  en: {
+    title:'EcoQuiz', subtitle:'Test your knowledge about our world!',
+    nameLabel:'Your Name', namePH:'Enter your name…', next:'Next →',
+    chooseAvatar:'Choose Your Avatar', chooseTheme:'Choose a Theme',
+    themes:{ geography:'Geography', history:'History', science:'Science', food:'Food & Drink', animals:'Animals' },
+    themeDesc:{ geography:'Oceans, Mountains & More', history:'Past Events & Figures',
+                science:'Nature & Discovery', food:'Flavours of the World', animals:'Wildlife & Nature' },
+    scoreLabel:'Score', qLabel:'Question', of:'of',
+    correct:'Correct! 🌿', wrong:'Wrong! 🍂',
+    nextQ:'Next Question →', seeResults:'See Results →',
+    greetPrefix:'Well done,', playAgain:'Play Again', changeTheme:'Change Theme',
+    breakdown:'Your Answers',
+    msg:['Keep practicing! The world awaits! 🌍','Not bad! Keep learning! 📚','Well done! Keep exploring! 🌱','Outstanding! You\'re an EcoChampion! 🏆'],
+    stars:['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'],
+  },
+  ar: {
+    title:'إيكوكويز', subtitle:'اختبر معلوماتك عن عالمنا!',
+    nameLabel:'اسمك', namePH:'أدخل اسمك…', next:'← التالي',
+    chooseAvatar:'اختر صورتك الرمزية', chooseTheme:'اختر موضوعاً',
+    themes:{ geography:'الجغرافيا', history:'التاريخ', science:'العلوم', food:'الطعام والشراب', animals:'الحيوانات' },
+    themeDesc:{ geography:'المحيطات والجبال والمزيد', history:'أحداث وشخصيات تاريخية',
+                science:'الطبيعة والاكتشاف', food:'نكهات من حول العالم', animals:'الحياة البرية والطبيعة' },
+    scoreLabel:'النتيجة', qLabel:'السؤال', of:'من',
+    correct:'إجابة صحيحة! 🌿', wrong:'إجابة خاطئة! 🍂',
+    nextQ:'السؤال التالي ←', seeResults:'عرض النتائج ←',
+    greetPrefix:'أحسنت،', playAgain:'العب مجدداً', changeTheme:'تغيير الموضوع',
+    breakdown:'إجاباتك',
+    msg:['استمر في التدرب! العالم ينتظرك! 🌍','ليس سيئاً! استمر في التعلم! 📚','أحسنت! استمر في الاستكشاف! 🌱','رائع! أنت بطل البيئة! 🏆'],
+    stars:['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'],
+  },
+};
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let lang = 'en';
+let playerName = '';
+let selectedAvatar = null;
+let selectedTheme = null;
+let currentQ = 0;
+let score = 0;
+let answered = false;
+let answerLog = [];
+
+// ─────────────────────────────────────────────
+// LANGUAGE
+// ─────────────────────────────────────────────
+function setLang(l) {
+  lang = l;
+  const isAr = l === 'ar';
+  document.documentElement.lang = l;
+  document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+  document.body.setAttribute('lang', l);
+  document.body.dir = isAr ? 'rtl' : 'ltr';
+  document.getElementById('btn-en').classList.toggle('active', !isAr);
+  document.getElementById('btn-ar').classList.toggle('active',  isAr);
+  applyStrings();
+  const ag = document.getElementById('avatarGrid');
+  if (ag.children.length) renderAvatars();
+  const tg = document.getElementById('themeGrid');
+  if (tg.children.length) renderThemes();
+}
+
+function T(key) { return LANG[lang][key]; }
+
+function setText(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+
+function applyStrings() {
+  const L = LANG[lang];
+  setText('t-title', L.title);
+  setText('t-subtitle', L.subtitle);
+  setText('t-name-label', L.nameLabel);
+  setText('t-choose-avatar', L.chooseAvatar);
+  setText('t-choose-theme', L.chooseTheme);
+  setText('t-next-btn', L.next);
+  setText('t-next-btn-2', L.next);
+  setText('t-score-label', L.scoreLabel);
+  setText('t-q-label', L.qLabel);
+  setText('t-of', L.of);
+  setText('t-next-q-btn', L.nextQ);
+  setText('t-play-again-btn', L.playAgain);
+  setText('t-change-theme-btn', L.changeTheme);
+  setText('t-breakdown', L.breakdown);
+  const inp = document.getElementById('playerName');
+  if (inp) inp.placeholder = L.namePH;
+}
+
+// ─────────────────────────────────────────────
+// SCREENS
+// ─────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+// ─────────────────────────────────────────────
+// WELCOME
+// ─────────────────────────────────────────────
+function checkNameInput() {
+  const v = document.getElementById('playerName').value.trim();
+  document.getElementById('btn-welcome-next').disabled = v.length === 0;
+}
+
+function goToAvatar() {
+  playerName = document.getElementById('playerName').value.trim();
+  if (!playerName) return;
+  renderAvatars();
+  showScreen('avatar');
+}
+
+// ─────────────────────────────────────────────
+// AVATAR
+// ─────────────────────────────────────────────
+function renderAvatars() {
+  const grid = document.getElementById('avatarGrid');
+  grid.innerHTML = '';
+  AVATARS.forEach((av, i) => {
+    const div = document.createElement('div');
+    div.className = 'avatar-option' + (selectedAvatar === i ? ' selected' : '');
+    div.innerHTML = `<span class="avatar-emoji">${av.emoji}</span><span class="avatar-label">${lang === 'ar' ? av.ar : av.en}</span>`;
+    div.onclick = () => {
+      selectedAvatar = i;
+      document.getElementById('btn-avatar-next').disabled = false;
+      renderAvatars();
+    };
+    grid.appendChild(div);
+  });
+}
+
+function goToTheme() {
+  renderThemes();
+  showScreen('theme');
+}
+
+// ─────────────────────────────────────────────
+// THEMES
+// ─────────────────────────────────────────────
+function renderThemes() {
+  const grid = document.getElementById('themeGrid');
+  grid.innerHTML = '';
+  THEMES.forEach((th, i) => {
+    const div = document.createElement('div');
+    div.className = `theme-card ${th.cls}${i === 4 ? ' theme-card-fifth' : ''}`;
+    div.innerHTML = `
+      <span class="theme-icon">${th.icon}</span>
+      <div class="theme-name">${LANG[lang].themes[th.key]}</div>
+      <div class="theme-desc">${LANG[lang].themeDesc[th.key]}</div>`;
+    div.onclick = () => startQuiz(th);
+    grid.appendChild(div);
+  });
+}
+
+// ─────────────────────────────────────────────
+// QUIZ
+// ─────────────────────────────────────────────
+function startQuiz(th) {
+  selectedTheme = th;
+  currentQ = 0;
+  score = 0;
+  answerLog = [];
+
+  document.body.className = th.bodyClass;
+  document.body.setAttribute('lang', lang);
+  document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+  const av = AVATARS[selectedAvatar ?? 0];
+  document.getElementById('quiz-avatar-display').textContent = av.emoji;
+  document.getElementById('quiz-player-name').textContent = playerName;
+  document.getElementById('score-display').textContent = 0;
+  document.getElementById('score-total').textContent = 5;
+  applyStrings();
+
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const qArr = QUESTIONS[selectedTheme.key][lang];
+  const q    = qArr[currentQ];
+  answered   = false;
+
+  const pct = Math.round(((currentQ + 1) / 5) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('current-q-num').textContent = currentQ + 1;
+
+  document.getElementById('theme-badge').textContent =
+    selectedTheme.icon + ' ' + LANG[lang].themes[selectedTheme.key];
+
+  document.getElementById('question-text').textContent = q.q;
+
+  const labels = ['A','B','C','D'];
+  const grid   = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-label">${labels[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i, q.answer, q.exp);
+    grid.appendChild(btn);
+  });
+
+  document.getElementById('feedback-banner').className = 'feedback-banner';
+  document.getElementById('btn-next-q').style.display = 'none';
+  setText('t-next-q-btn', currentQ === 4 ? LANG[lang].seeResults : LANG[lang].nextQ);
+}
+
+function selectAnswer(chosen, correct, exp) {
+  if (answered) return;
+  answered = true;
+
+  const isCorrect = chosen === correct;
+  answerLog.push(isCorrect);
+  if (isCorrect) score++;
+  document.getElementById('score-display').textContent = score;
+
+  document.querySelectorAll('.option-btn').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === correct)              btn.classList.add('correct');
+    else if (i === chosen && !isCorrect) btn.classList.add('wrong');
+  });
+
+  const banner = document.getElementById('feedback-banner');
+  document.getElementById('feedback-icon').textContent = isCorrect ? '✅' : '❌';
+  document.getElementById('feedback-main').textContent = isCorrect ? LANG[lang].correct : LANG[lang].wrong;
+  document.getElementById('feedback-explain').textContent = exp;
+  banner.className = 'feedback-banner show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+
+  document.getElementById('btn-next-q').style.display = 'block';
+  setText('t-next-q-btn', currentQ === 4 ? LANG[lang].seeResults : LANG[lang].nextQ);
+}
+
+function nextQuestion() {
+  currentQ++;
+  currentQ >= 5 ? showResults() : renderQuestion();
+}
+
+// ─────────────────────────────────────────────
+// RESULTS
+// ─────────────────────────────────────────────
+function showResults() {
+  const av = AVATARS[selectedAvatar ?? 0];
+  document.getElementById('results-avatar').textContent = av.emoji;
+  document.getElementById('results-name').textContent =
+    LANG[lang].greetPrefix + ' ' + playerName + '!';
+  document.getElementById('results-score').textContent = score;
+
+  const starIdx = Math.min(score, 5) - (score === 0 ? 0 : 1);
+  document.getElementById('results-stars').textContent =
+    score === 0 ? '💧' : LANG[lang].stars[starIdx];
+
+  const msgIdx = score <= 1 ? 0 : score <= 2 ? 1 : score <= 3 ? 2 : 3;
+  document.getElementById('results-message').textContent = LANG[lang].msg[msgIdx];
+
+  setText('t-breakdown', LANG[lang].breakdown);
+  setText('t-play-again-btn', LANG[lang].playAgain);
+  setText('t-change-theme-btn', LANG[lang].changeTheme);
+
+  const barsEl = document.getElementById('result-bars');
+  barsEl.innerHTML = '';
+  answerLog.forEach((correct, i) => {
+    const row = document.createElement('div');
+    row.className = 'result-bar-row';
+    row.innerHTML = `
+      <span class="result-bar-label">${i + 1}</span>
+      <div class="result-bar-track">
+        <div class="result-bar-fill ${correct ? 'right' : 'wrong'}"
+             style="width:0%" data-pct="${correct ? 100 : 30}"></div>
+      </div>
+      <span class="result-bar-icon">${correct ? '✅' : '❌'}</span>`;
+    barsEl.appendChild(row);
+  });
+
+  showScreen('results');
+
+  setTimeout(() => {
+    document.querySelectorAll('.result-bar-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 150);
+
+  if (score >= 4) spawnConfetti();
+}
+
+function playAgain() {
+  score = 0; currentQ = 0; answerLog = [];
+  selectedTheme = null; selectedAvatar = null;
+  document.body.className = '';
+  document.body.setAttribute('lang', lang);
+  document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.getElementById('playerName').value = '';
+  document.getElementById('btn-welcome-next').disabled = true;
+  showScreen('welcome');
+}
+
+function changeTheme() {
+  document.body.className = '';
+  document.body.setAttribute('lang', lang);
+  document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  renderThemes();
+  showScreen('theme');
+}
+
+// ─────────────────────────────────────────────
+// CONFETTI
+// ─────────────────────────────────────────────
+function spawnConfetti() {
+  const colors = ['#4CAF50','#2196F3','#FF9800','#E91E63','#9C27B0','#FFEB3B','#00BCD4'];
+  for (let i = 0; i < 70; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      const size = 6 + Math.random() * 8;
+      c.style.cssText = `
+        left:${Math.random()*100}vw; top:0;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        width:${size}px; height:${size}px;
+        border-radius:${Math.random()>.5?'50%':'3px'};
+        animation-duration:${1.5+Math.random()*2.5}s;
+      `;
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4000);
+    }, i * 35);
+  }
+}
+
+// ─────────────────────────────────────────────
+// BACKGROUND LEAVES
+// ─────────────────────────────────────────────
+(function spawnLeaves() {
+  const container = document.getElementById('bgLeaves');
+  const leaves = ['🍃','🌿','🍀','🌱','🌾','🍂','🌻'];
+  for (let i = 0; i < 16; i++) {
+    const el = document.createElement('div');
+    el.className = 'leaf';
+    el.textContent = leaves[Math.floor(Math.random() * leaves.length)];
+    el.style.cssText = `
+      left:${Math.random()*100}%;
+      font-size:${1.2 + Math.random()*2}rem;
+      animation-duration:${9 + Math.random()*10}s;
+      animation-delay:${Math.random()*12}s;
+    `;
+    container.appendChild(el);
+  }
+})();
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+applyStrings();
+</script>
+</body>
+</html>
