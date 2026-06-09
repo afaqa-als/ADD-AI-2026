@@ -1,0 +1,27 @@
+{
+  "name": "add-ai-2026",
+  "version": "1.0.0",
+  "description": "EcoQuiz — bilingual AR/EN general knowledge trivia game",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/afaqa-als/ADD-AI-2026.git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "next": "^14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^6.0.3"
+  }
+}
