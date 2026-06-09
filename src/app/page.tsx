@@ -20,16 +20,20 @@ export default function Home() {
     goToAvatar,
     selectAvatar,
     goToTheme,
-    startQuiz,
+    selectTheme,
     selectAnswer,
     nextQuestion,
     playAgain,
     changeTheme,
   } = useQuiz();
 
-  const { screen, lang, playerName, selectedAvatar, selectedTheme, currentQ, score, answerLog } = state;
+  const {
+    screen, lang, playerName, selectedAvatar,
+    selectedTheme, currentQ, score, answerLog,
+    loadingTheme, fetchError,
+  } = state;
 
-  // Sync body class for theme gradient + RTL
+  // Sync body class for theme gradient + RTL direction
   useEffect(() => {
     document.body.className = selectedTheme?.bodyClass ?? '';
     document.body.lang = lang;
@@ -44,13 +48,14 @@ export default function Home() {
   }
 
   function handleThemeSelect(theme: Theme) {
-    startQuiz(theme);
+    selectTheme(theme, lang);
   }
 
   return (
     <>
       <BgLeaves />
       <div className="container">
+
         {screen === 'welcome' && (
           <WelcomeScreen
             lang={lang}
@@ -71,22 +76,30 @@ export default function Home() {
         {screen === 'theme' && (
           <ThemeScreen
             lang={lang}
+            loadingTheme={loadingTheme}
             onSelect={handleThemeSelect}
           />
         )}
 
         {screen === 'quiz' && selectedTheme && currentQuestion && (
-          <QuizScreen
-            lang={lang}
-            theme={selectedTheme}
-            avatar={currentAvatar}
-            playerName={playerName}
-            currentQ={currentQ}
-            score={score}
-            question={currentQuestion}
-            onAnswer={selectAnswer}
-            onNext={nextQuestion}
-          />
+          <>
+            {fetchError && (
+              <div className="fetch-error-banner">
+                ⚠️ {fetchError}
+              </div>
+            )}
+            <QuizScreen
+              lang={lang}
+              theme={selectedTheme}
+              avatar={currentAvatar}
+              playerName={playerName}
+              currentQ={currentQ}
+              score={score}
+              question={currentQuestion}
+              onAnswer={selectAnswer}
+              onNext={nextQuestion}
+            />
+          </>
         )}
 
         {screen === 'results' && selectedTheme && (
@@ -101,6 +114,7 @@ export default function Home() {
             onChangeTheme={changeTheme}
           />
         )}
+
       </div>
     </>
   );

@@ -385,6 +385,32 @@ body[lang="ar"] { font-family: 'Cairo', sans-serif; }
 
 .results-actions { display: flex; flex-direction: column; gap: 10px; }
 
+/* ─── Spinner (theme loading) ────────────────────────────────────────────────── */
+.theme-spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Fetch-error banner ─────────────────────────────────────────────────────── */
+.fetch-error-banner {
+  background: #FFF3E0;
+  border: 2px solid #FF9800;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #E65100;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* ─── Confetti ───────────────────────────────────────────────────────────────── */
 .confetti-piece {
   position: fixed;
